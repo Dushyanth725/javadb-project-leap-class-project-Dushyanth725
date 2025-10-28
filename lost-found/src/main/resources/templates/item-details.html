@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/header}">
+<head>
+    <title>Item Details - Campus Lost & Found</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="fas fa-box me-2"></i>Item Details</h1>
+                    <div>
+                        <a th:href="@{/web/items}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Items
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0" th:text="${item.name}">Item Name</h5>
+                        <span th:if="${item.status == 'LOST'}" class="badge bg-warning">
+                            <i class="fas fa-exclamation-triangle me-1"></i>Lost
+                        </span>
+                        <span th:if="${item.status == 'FOUND'}" class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i>Found
+                        </span>
+                        <span th:if="${item.status == 'RECOVERED'}" class="badge bg-secondary">
+                            <i class="fas fa-archive me-1"></i>Recovered
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Item Details -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Item Information</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Category:</strong> 
+                                        <span class="badge bg-info" th:text="${item.category}">Category</span>
+                                    </p>
+                                    <p><strong>Location:</strong> 
+                                        <span th:text="${item.location}">Location</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Status:</strong> 
+                                        <span th:text="${item.status}">Status</span>
+                                    </p>
+                                    <p><strong>Date Reported:</strong> 
+                                        <span th:text="${#temporals.format(item.reportedAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <p><strong>Description:</strong></p>
+                                <p class="text-muted" th:text="${item.description ?: 'No description provided.'}">
+                                    Description
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Reporter Information -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-3">Reporter Information</h6>
+                            <p><strong>Reported By:</strong> 
+                                <span th:text="${item.reportedBy.name}">Reporter Name</span>
+                            </p>
+                            <p><strong>Contact:</strong> 
+                                <span th:text="${item.reportedBy.email}">Email</span>
+                                <span th:if="${item.reportedBy.contact}" th:text="'| ' + ${item.reportedBy.contact}">Phone</span>
+                            </p>
+                        </div>
+
+                        <!-- Status Update Form -->
+                        <div th:if="${item.status != 'RECOVERED'}" class="mb-4">
+                            <h6 class="fw-bold mb-3">Update Status</h6>
+                            <form th:action="@{/web/items/{id}/update(id=${item.itemId})}" method="post" class="row g-3">
+                                <div class="col-md-6">
+                                    <select class="form-select" name="status" required>
+                                        <option value="">Select New Status</option>
+                                        <option value="LOST" th:selected="${item.status == 'LOST'}">Lost</option>
+                                        <option value="FOUND" th:selected="${item.status == 'FOUND'}">Found</option>
+                                        <option value="RECOVERED">Recovered</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <select class="form-select" name="userId" required>
+                                        <option value="">Select User</option>
+                                        <option th:each="user : ${users}" 
+                                                th:value="${user.userId}" 
+                                                th:text="|${user.name} - ${user.email}|">User</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <input type="text" class="form-control" name="remarks" 
+                                           placeholder="Add remarks about the status update">
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i>Update Status
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Item History -->
+                        <div class="mt-4">
+                            <h6 class="fw-bold mb-3">Item History</h6>
+                            <div th:if="${item.remarks}" class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span th:text="${item.remarks}">Remarks</span>
+                            </div>
+                            <div th:if="${item.resolvedAt}" class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Item was recovered on 
+                                <span th:text="${#temporals.format(item.resolvedAt, 'MMM dd, yyyy HH:mm')}">
+                                    Resolution Date
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

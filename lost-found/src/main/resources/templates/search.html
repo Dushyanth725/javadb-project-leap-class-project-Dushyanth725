@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="fragments/header :: layout(~{::title}, ~{::content})">
+<head>
+    <title>Search Items - Campus Lost & Found</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="fas fa-search me-2"></i>Search Items</h1>
+                    <a th:href="@{/web/report}" class="btn btn-success">
+                        <i class="fas fa-plus-circle me-1"></i>Report New Item
+                    </a>
+                </div>
+
+                <!-- Search Form -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form th:action="@{/web/search}" method="get" class="row g-3">
+                            <div class="col-md-4">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">All Categories</option>
+                                    <option value="Electronics" th:selected="${searchParams?.category == 'Electronics'}">Electronics</option>
+                                    <option value="Clothing" th:selected="${searchParams?.category == 'Clothing'}">Clothing</option>
+                                    <option value="Books" th:selected="${searchParams?.category == 'Books'}">Books & Stationery</option>
+                                    <option value="Personal" th:selected="${searchParams?.category == 'Personal'}">Personal Items</option>
+                                    <option value="Jewelry" th:selected="${searchParams?.category == 'Jewelry'}">Jewelry & Accessories</option>
+                                    <option value="Bags" th:selected="${searchParams?.category == 'Bags'}">Bags & Wallets</option>
+                                    <option value="Keys" th:selected="${searchParams?.category == 'Keys'}">Keys & ID Cards</option>
+                                    <option value="Sports" th:selected="${searchParams?.category == 'Sports'}">Sports Equipment</option>
+                                    <option value="Other" th:selected="${searchParams?.category == 'Other'}">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="location" name="location" 
+                                       th:value="${searchParams?.location}" 
+                                       placeholder="e.g., Library, Cafeteria">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="name" class="form-label">Item Name</label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       th:value="${searchParams?.name}"
+                                       placeholder="e.g., Phone, Wallet">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-1"></i>Search
+                                </button>
+                                <a th:href="@{/web/search}" class="btn btn-outline-secondary ms-2">
+                                    <i class="fas fa-undo me-1"></i>Reset
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Search Results -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Search Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- No Results Message -->
+                        <div th:if="${#lists.isEmpty(items)}" class="text-center text-muted py-5">
+                            <i class="fas fa-search fa-3x mb-3"></i>
+                            <h4>No items found</h4>
+                            <p class="mb-3">Try adjusting your search criteria</p>
+                            <a th:href="@{/web/search}" class="btn btn-primary">Clear Search</a>
+                        </div>
+
+                        <!-- Results Grid -->
+                        <div th:unless="${#lists.isEmpty(items)}" class="row">
+                            <div th:each="item : ${items}" class="col-md-6 col-lg-4 mb-4">
+                                <div class="card item-card h-100" 
+                                     th:classappend="${item.status == 'LOST'} ? 'status-lost' : 
+                                                   ${item.status == 'FOUND'} ? 'status-found' : 
+                                                   'status-recovered'">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h5 class="card-title" th:text="${item.name}">Item Name</h5>
+                                            <span th:if="${item.status == 'LOST'}" class="badge bg-warning">Lost</span>
+                                            <span th:if="${item.status == 'FOUND'}" class="badge bg-success">Found</span>
+                                            <span th:if="${item.status == 'RECOVERED'}" class="badge bg-secondary">Recovered</span>
+                                        </div>
+                                        
+                                        <p class="card-text text-muted mb-2" 
+                                           th:text="${item.description} ?: 'No description available'">
+                                            Description
+                                        </p>
+                                        
+                                        <div class="item-details">
+                                            <div class="mb-1">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-tag me-1"></i>
+                                                    <span th:text="${item.category}">Category</span>
+                                                </small>
+                                            </div>
+                                            <div class="mb-1">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                                    <span th:text="${item.location}">Location</span>
+                                                </small>
+                                            </div>
+                                            <div class="mb-2">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    <span th:text="${#temporals.format(item.reportedAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        
+                                        <a th:href="@{/web/item/{id}(id=${item.itemId})}" 
+                                           class="btn btn-sm btn-primary">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
