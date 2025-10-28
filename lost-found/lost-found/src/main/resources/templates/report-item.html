@@ -1,0 +1,126 @@
+<!-- src/main/resources/templates/report-item.html -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="fragments/header :: layout(~{::title}, ~{::content})">
+<head>
+    <title>Report Item - Campus Lost & Found</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="fas fa-plus-circle me-2"></i>Report New Item</h1>
+                    <a th:href="@{/web/items}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Items
+                    </a>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Item Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/web/report}" method="post" th:object="${item}">
+                            <!-- Basic Information -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Item Name *</label>
+                                    <input type="text" class="form-control" id="name" th:field="*{name}" 
+                                           placeholder="e.g., Black Wallet, iPhone 13" required>
+                                    <div class="form-text">Enter a clear and descriptive name for the item.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="category" class="form-label">Category *</label>
+                                    <select class="form-select" id="category" th:field="*{category}" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Clothing">Clothing</option>
+                                        <option value="Books">Books & Stationery</option>
+                                        <option value="Personal">Personal Items</option>
+                                        <option value="Jewelry">Jewelry & Accessories</option>
+                                        <option value="Bags">Bags & Wallets</option>
+                                        <option value="Keys">Keys & ID Cards</option>
+                                        <option value="Sports">Sports Equipment</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Status and Location -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Item Status *</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" th:field="*{status}" 
+                                                   id="statusLost" value="LOST" checked>
+                                            <label class="form-check-label text-warning" for="statusLost">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>Lost Item
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" th:field="*{status}" 
+                                                   id="statusFound" value="FOUND">
+                                            <label class="form-check-label text-success" for="statusFound">
+                                                <i class="fas fa-check-circle me-1"></i>Found Item
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="location" class="form-label">Location *</label>
+                                    <input type="text" class="form-control" id="location" th:field="*{location}" 
+                                           placeholder="e.g., Library Building, Room 201" required>
+                                    <div class="form-text">Where was it lost or found?</div>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" 
+                                          rows="4" placeholder="Provide detailed description of the item..."></textarea>
+                                <div class="form-text">
+                                    Include details like color, brand, distinguishing features, contents, etc.
+                                </div>
+                            </div>
+
+                            <!-- Reporter Information -->
+                            <div class="mb-3">
+                                <label for="reportedBy" class="form-label">Reported By *</label>
+                                <select class="form-select" id="reportedBy" name="reportedBy" required>
+                                    <option value="">Select Reporter</option>
+                                    <option th:each="user : ${users}" 
+                                            th:value="${user.userId}" 
+                                            th:text="|${user.name} - ${user.email}|">
+                                    </option>
+                                </select>
+                                <div class="form-text">Select your name from the list</div>
+                            </div>
+
+                            <!-- Remarks -->
+                            <div class="mb-3">
+                                <label for="remarks" class="form-label">Additional Remarks</label>
+                                <input type="text" class="form-control" id="remarks" th:field="*{remarks}" 
+                                       placeholder="Any additional information...">
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/web/items}" class="btn btn-outline-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-1"></i>Submit Report
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Help Section -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Reporting Guidelines</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Provide accurate and detailed descriptions</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Include specific locations and timings
