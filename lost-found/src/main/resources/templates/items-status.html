@@ -1,0 +1,110 @@
+<!-- src/main/resources/templates/items-status.html -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="fragments/header :: layout(~{::title}, ~{::content})">
+<head>
+    <title th:text="|${status} Items - Campus Lost & Found|">Items - Campus Lost & Found</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                <i th:if="${status == 'LOST'}" class="fas fa-exclamation-triangle text-warning me-2"></i>
+                <i th:if="${status == 'FOUND'}" class="fas fa-check-circle text-success me-2"></i>
+                <span th:text="${status}">Status</span> Items
+            </h1>
+            <div>
+                <a th:href="@{/web/report}" class="btn btn-success me-2">
+                    <i class="fas fa-plus-circle me-1"></i>Report New Item
+                </a>
+                <a th:href="@{/web/items}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to All Items
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="btn-group" role="group">
+                            <a th:href="@{/web/items}" class="btn btn-outline-primary">All Items</a>
+                            <a th:href="@{/web/items/lost}" 
+                               class="btn" 
+                               th:classappend="${status == 'LOST'} ? 'btn-warning' : 'btn-outline-warning'">Lost Items</a>
+                            <a th:href="@{/web/items/found}" 
+                               class="btn" 
+                               th:classappend="${status == 'FOUND'} ? 'btn-success' : 'btn-outline-success'">Found Items</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Grid -->
+        <div class="row">
+            <div th:each="item : ${items}" class="col-md-6 col-lg-4 mb-4">
+                <div class="card item-card h-100" 
+                     th:classappend="${item.status == 'LOST'} ? 'status-lost' : 
+                                   ${item.status == 'FOUND'} ? 'status-found' : 
+                                   'status-recovered'}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title" th:text="${item.name}">Item Name</h5>
+                            <span th:if="${item.status == 'LOST'}" class="badge bg-warning">Lost</span>
+                            <span th:if="${item.status == 'FOUND'}" class="badge bg-success">Found</span>
+                        </div>
+                        
+                        <p class="card-text text-muted mb-2" th:text="${item.description} ?: 'No description available'">
+                            Description
+                        </p>
+                        
+                        <div class="item-details">
+                            <div class="mb-1">
+                                <small class="text-muted">
+                                    <i class="fas fa-tag me-1"></i>
+                                    <span th:text="${item.category}">Category</span>
+                                </small>
+                            </div>
+                            <div class="mb-1">
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    <span th:text="${item.location}">Location</span>
+                                </small>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    <span th:text="${#temporals.format(item.reportedAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                                </small>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i>
+                                    Reported by: <span th:text="${item.reportedBy.name}">User</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted" th:if="${item.remarks}" th:text="${item.remarks}">Remarks</small>
+                            <a th:href="@{/web/item/{id}(id=${item.itemId})}" 
+                               class="btn btn-sm btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(items)}" class="text-center text-muted py-5">
+            <i class="fas fa-inbox fa-4x mb-3"></i>
+            <h4>No <span th:text="${status ?: 'items'}">items</span> found</h4>
+            <p class="mb-3" th:text="|No ${status ?: 'items'} have been reported yet.|">
+                No items have been reported yet.
+            </p>
+            <a th:href="@{/web/report}" class="btn btn-primary">Report First Item</a>
+        </div>
+    </div>
+</body>
+</html>

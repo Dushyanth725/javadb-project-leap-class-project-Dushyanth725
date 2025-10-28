@@ -1,0 +1,180 @@
+<!-- src/main/resources/templates/dashboard.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Campus Lost & Found</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand { font-weight: bold; }
+        .card { margin-bottom: 1rem; }
+        .status-lost { border-left: 4px solid #dc3545; }
+        .status-found { border-left: 4px solid #198754; }
+        .status-recovered { border-left: 4px solid #6c757d; }
+        .item-card:hover { transform: translateY(-2px); transition: all 0.3s ease; }
+        .stats-card { border: none; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/web/dashboard">
+                <i class="fas fa-search"></i> Campus Lost & Found
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h1>
+            <a href="/web/report" class="btn btn-success">
+                <i class="fas fa-plus-circle me-1"></i>Report New Item
+            </a>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stats-card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-box fa-3x mb-3"></i>
+                        <h3 th:text="${totalItems}">0</h3>
+                        <p class="mb-0">Total Items</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card bg-warning text-dark">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                        <h3 th:text="${#lists.size(lostItems)}">0</h3>
+                        <p class="mb-0">Lost Items</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-check-circle fa-3x mb-3"></i>
+                        <h3 th:text="${#lists.size(foundItems)}">0</h3>
+                        <p class="mb-0">Found Items</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <a href="/web/report" class="btn btn-outline-primary btn-lg w-100 mb-2">
+                                    <i class="fas fa-plus me-2"></i>Report Item
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/web/search" class="btn btn-outline-info btn-lg w-100 mb-2">
+                                    <i class="fas fa-search me-2"></i>Search Items
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/web/items/lost" class="btn btn-outline-warning btn-lg w-100 mb-2">
+                                    <i class="fas fa-search me-2"></i>View Lost
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="/web/items/found" class="btn btn-outline-success btn-lg w-100 mb-2">
+                                    <i class="fas fa-search me-2"></i>View Found
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Items -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>Recently Lost Items
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(lostItems)}" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No lost items reported</p>
+                        </div>
+                        <div th:each="item : ${lostItems}" class="card item-card status-lost mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title" th:text="${item.name}">Item Name</h6>
+                                <p class="card-text mb-1">
+                                    <small class="text-muted">
+                                        <i class="fas fa-tag me-1"></i>
+                                        <span th:text="${item.category}">Category</span>
+                                    </small>
+                                </p>
+                                <p class="card-text mb-1">
+                                    <small class="text-muted">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        <span th:text="${item.location}">Location</span>
+                                    </small>
+                                </p>
+                                <a th:href="@{/web/item/{id}(id=${item.itemId})}" 
+                                   class="btn btn-sm btn-outline-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-check-circle text-success me-2"></i>Recently Found Items
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(foundItems)}" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No found items reported</p>
+                        </div>
+                        <div th:each="item : ${foundItems}" class="card item-card status-found mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title" th:text="${item.name}">Item Name</h6>
+                                <p class="card-text mb-1">
+                                    <small class="text-muted">
+                                        <i class="fas fa-tag me-1"></i>
+                                        <span th:text="${item.category}">Category</span>
+                                    </small>
+                                </p>
+                                <p class="card-text mb-1">
+                                    <small class="text-muted">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        <span th:text="${item.location}">Location</span>
+                                    </small>
+                                </p>
+                                <a th:href="@{/web/item/{id}(id=${item.itemId})}" 
+                                   class="btn btn-sm btn-outline-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-light mt-5 py-4">
+        <div class="container text-center">
+            <p>&copy; 2024 Campus Lost & Found Management System</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
