@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.lostfound.model.Item;
-import com.lostfound.model.User;
 import com.lostfound.service.ItemService;
 import com.lostfound.service.UserService;
 
